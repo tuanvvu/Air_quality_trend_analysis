@@ -1,7 +1,7 @@
 setwd("F:/Air Quality Trends/ Data analysis/")
 workingDirectory<<-"F:/Air Quality Trends/ Data analysis/"
 
-library(normalweatherr) ### Random Forest/ Weather Normalization
+library(normalweatherr) ### Random Forest/ Weather Normalization from Grange Github
 library (openair) ### For Theil-sen analysis
 
 ###01. Import the data set which contains: date, PM2.5 and MET weathers
