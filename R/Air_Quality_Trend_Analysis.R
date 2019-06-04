@@ -23,7 +23,7 @@ model_random_forest_PM2.5 <- calculate_model(
   list_input_data, 
   variables = variables, 
   mtry = 4,
-  nodesize = 5,
+  nodesize = 3,
   ntree=300,
   model = "rf")
 
