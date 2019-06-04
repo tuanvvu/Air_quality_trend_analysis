@@ -43,16 +43,16 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
       hour_1<-MET_2013_2017[i,5] ### peak up hour column in the data set  
       week_1<-MET_2013_2017[i,3] ### peak up week column in the data set 
       ### Randomly sample weather data from 1988-2017
-      if(w==1){
-        MET_sample<-MET_1988_2017 %>% filter(hour==h)  %>% filter(week>=52|week <= 3)  %>% sample_n(10)}
-      if(w==2){
-        MET_sample<-MET_1988_2017 %>% filter(hour==h)  %>% filter(week>=53|week <= 4)  %>% sample_n(10)}
-      if(w==52) {
-        MET_sample<-MET_1988_2017 %>% filter(hour==h)  %>% filter(week>=50|week <= 1)  %>% sample_n(10)}
-      if(w==53) {
-        MET_sample<-MET_1988_2017 %>% filter(hour==h)  %>% filter(week>=51|week <= 2)  %>% sample_n(10)}
-      if(w>2 & w<51){
-        MET_sample<-MET_1988_2017 %>% filter(hour==h)  %>% filter(week>= w-2 & week <= w+2) %>% sample_n(10)}  
+      if(week_1==1){
+        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=52|week <= 3)  %>% sample_n(10)}
+      if(week_1==2){
+        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=53|week <= 4)  %>% sample_n(10)}
+      if(week_1==52) {
+        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=50|week <= 1)  %>% sample_n(10)}
+      if(week_1==53) {
+        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=51|week <= 2)  %>% sample_n(10)}
+      if(week_1>2 & week_1<51){
+        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>= week_1-2 & week <= week_1+2) %>% sample_n(10)}  
       ### Generate the new dataset of MET data from 2013-2017 by 1988-2017  
         MET_2013_2017[i,9:18]<-MET_sample[5,9:18]} # Generate the new data met for 2013-2017 by 1988-2017
     
