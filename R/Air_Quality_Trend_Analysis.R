@@ -40,8 +40,8 @@ Initial_nomarlised_data<-data_PM2.5[,1]
 Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data set
   for (j in 1:n){
     for (i in 1:43824){           ### 43824 is number of hourly obserbvation from 2013-2017                    
-      hour_1<-MET_2013_2017[i,5] ### peak up hour column in the data set  
-      week_1<-MET_2013_2017[i,3] ### peak up week column in the data set 
+      hour_1<-MET_2013_2017[i,5] ### "hour" variable is in the 5th column in the data set  
+      week_1<-MET_2013_2017[i,3] ### "week" variable is in the 3rd column in the data set 
       ### Randomly sample weather data from 1988-2017
       if(week_1==1){
         MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=52|week <= 3)  %>% sample_n(10)}
