@@ -13,7 +13,7 @@ data_PM2.5$value<-data_PM2.5$PM2.5
 # names(data_PM2.5)  
 #Variables in the data set: date, date_unix, day_julian, week, weekday, hour
 #MET variable: temperature (temp), Relative Humidity (RH), wind speed (ws), wind direction (wd), atmospheric pressure (pressure), back-trajectories (cluster).
-
+set.seet(123) 
 list_input_data <- split_input_data(data_PM2.5, fraction =0.7) # split data set into training data set and testing data set
 
 variables <- c("date_unix","day_julian","weekday","hour","wd","ws", "temp","RH","pressure")
