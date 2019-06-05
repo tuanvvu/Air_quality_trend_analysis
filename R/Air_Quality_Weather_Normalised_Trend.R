@@ -10,7 +10,7 @@ data_PM2.5<-import("data_PM2.5_2013_2017.csv", date="date", date.format = "%d/%m
 data_PM2.5<-add_date_variables(data_PM2.5)
 data_PM2.5$value<-data_PM2.5$PM2.5
 
-names(data_PM2.5)  
+# names(data_PM2.5)  
 #Variables in the data set: date, date_unix, day_julian, week, weekday, hour
 #MET variable: temperature (temp), Relative Humidity (RH), wind speed (ws), wind direction (wd), atmospheric pressure (pressure), back-trajectories (cluster).
 
