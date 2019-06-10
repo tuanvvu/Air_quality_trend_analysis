@@ -25,7 +25,7 @@ model_random_forest_PM2.5 <- calculate_model(
   variables = variables, 
   mtry = 4,
   nodesize = 3,
-  ntree=300,
+  ntree=200,
   model = "rf")
 
 model_random_forest_PM2.5$model  # Model performance on the Training data set
