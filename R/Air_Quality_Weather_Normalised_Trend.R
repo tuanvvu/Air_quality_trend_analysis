@@ -67,4 +67,4 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
 
 ### Final_weather_normalised_PM2.5 by aggregating 1000 single predictions.
 prediction <- Pollutant_prediction (1000) 
-final_weather_nomarlised_PM2.5 %>% apply(prediction[,3:1002],1,mean, na.rm=TRUE)
+final_weather_nomarlised_PM2.5 %>% apply(prediction[,2:1001],1,mean, na.rm=TRUE)
