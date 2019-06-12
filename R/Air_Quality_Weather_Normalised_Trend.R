@@ -1,3 +1,5 @@
+### This code is based on the "normalweatherr" package from Grange et al. (2018):https://github.com/skgrange/normalweatherr
+### Any question, please contact Tuan, v.vu@bham.ac.uk
 setwd("F:/Air Quality Trends/ Data analysis/")
 workingDirectory<<-"F:/Air Quality Trends/ Data analysis/"
 
@@ -60,11 +62,11 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
     predict_PM2.5_level<- normalise_for_meteorology( ### RUN Random Forest model with new MET dataset
       model_rf_PM2.5$model, 
       MET_2013_2017, 
-      variables = setdiff(variables,variables))
+      variables = setdiff(variables,variables), n=1)
     
     nomarlised_prediction[,j+1] <- predict_PM2.5_level$value_predict)}
       }
 
 ### Final_weather_normalised_PM2.5 by aggregating 1000 single predictions.
 prediction <- Pollutant_prediction (1000) 
-final_weather_nomarlised_PM2.5 %>% apply(prediction[,2:1001],1,mean, na.rm=TRUE)
+final_weather_nomarlised_PM2.5 %>% apply(prediction[,2:1001],1,mean, na.rm=TRUE) ### Mean value of 1000 predictions
