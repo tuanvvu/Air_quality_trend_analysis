@@ -37,8 +37,9 @@ model_random_forest_PM2.5$model  # Model performance on the Training data set
 # Initial MET data 
 MET_1988_2017<-import("MET_1988_2017.csv", date="date", date.format = "%d/%m/%Y %H:%M")
 MET_2013_2017<-import("PM2.5_MET_2013_2017.csv", date="date", date.format = "%d/%m/%Y %H:%M")
-Initial_nomarlised_data<-import("data_normalisation_initial_1000.csv", date="date", date.format = "%d/%m/%Y %H:%M")### A blank matrix, nrow= nrow(PM2.5_MET_2013_2017), ncol=1000
- 
+# Initial_nomarlised_data<-import("data_normalisation_initial_1000.csv", date="date", date.format = "%d/%m/%Y %H:%M")### A blank matrix, nrow= nrow(PM2.5_MET_2013_2017), ncol=1000
+nomarlised_prediction<- data_PM2.5[,1]
+
 #Predict the level of a pollutant in different weather condition
 Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data set
   for (j in 1:n){
@@ -64,9 +65,9 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
       MET_2013_2017, 
       variables = setdiff(variables,variables), n=1)
     
-    nomarlised_prediction[,j+1] <- predict_PM2.5_level$value_predict)}
+    nomarlised_prediction <-cbind(nomarlised_prediction, predict_PM2.5_level$value_predict)}
       }
 
 ### Final_weather_normalised_PM2.5 by aggregating 1000 single predictions.
-prediction <- Pollutant_prediction (1000) 
-final_weather_nomarlised_PM2.5 %>% apply(prediction[,2:1001],1,mean, na.rm=TRUE) ### Mean value of 1000 predictions
+Pollutant_prediction (1000) ### random by 1000 times
+final_weather_nomarlised_PM2.5 %>% apply(nomarlised_prediction[,2:1001],1,mean, na.rm=TRUE) ### Mean value of 1000 predictions
