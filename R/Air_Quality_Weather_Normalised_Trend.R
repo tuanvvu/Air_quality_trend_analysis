@@ -35,7 +35,7 @@ model_random_forest_PM2.5$model  # Model performance on the Training data set
 # Initial MET data 
 MET_1988_2017<-import("MET_1988_2017.csv", date="date", date.format = "%d/%m/%Y %H:%M")
 MET_2013_2017<-import("PM2.5_MET_2013_2017.csv", date="date", date.format = "%d/%m/%Y %H:%M")
-Initial_nomarlised_data<-data_PM2.5[,1]
+Initial_nomarlised_data<-data_PM2.5[,1:2]
  
 #Predict the level of a pollutant in different weather condition
 Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data set
@@ -67,4 +67,4 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
 
 ### Final_weather_normalised_PM2.5 by aggregating 1000 single predictions.
 prediction <- Pollutant_prediction (1000) 
-final_weather_nomarlised_PM2.5 %>% apply(prediction[,2:1001],1,mean, na.rm=TRUE)
+final_weather_nomarlised_PM2.5 %>% apply(prediction[,3:1002],1,mean, na.rm=TRUE)
