@@ -67,7 +67,7 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
     predict_PM2.5_level<- normalise_for_meteorology( ### RUN Random Forest model with new MET dataset
       model_rf_PM2.5$model, 
       MET_2013_2017, 
-      variables = setdiff(variables,variables), n=1)
+      variables = setdiff(variables,variables), n=0)
     
     nomarlised_prediction <-cbind(nomarlised_prediction, predict_PM2.5_level$value_predict)}
     write.csv(nomarlised_prediction,paste(workingDirectory,"nomarlised_prediction.csv",sep=""))
