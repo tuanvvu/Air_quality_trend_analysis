@@ -1,4 +1,5 @@
 ### This code is based on the "normalweatherr" package from Grange et al. (2018):https://github.com/skgrange/normalweatherr
+# Grange updated his "normalweatherr" package to "rmweather". His old packages "normalweaherr" is attached here.
 ### Any question, please contact Tuan, v.vu@bham.ac.uk
 setwd("F:/Air Quality Trends/ Data analysis/")
 workingDirectory<<-"F:/Air Quality Trends/ Data analysis/"
@@ -76,5 +77,5 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
 
 ### Final_weather_normalised_PM2.5 by aggregating 1000 single predictions.
 # Pollutant_prediction (1000) ### random by 1000 times
-nomarlised_prediction Pollutant_prediction (1000)
+nomarlised_prediction <- Pollutant_prediction (1000)
 final_weather_nomarlised_PM2.5 %>% apply(nomarlised_prediction[,2:1001],1,mean, na.rm=TRUE) ### Mean value of 1000 predictions
