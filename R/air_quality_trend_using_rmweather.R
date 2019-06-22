@@ -1,10 +1,9 @@
-### This studdy applied the based on the "rmweather" package from Grange et al. (2018):https://github.com/skgrange/normalweatherr
+### This studdy applied the based on the "rmweather" package from Grange et al. (2018):https://github.com/skgrange/rmweather
 
 setwd("F:/Air Quality Trends/ Data analysis/")
 workingDirectory<<-"F:/Air Quality Trends/ Data analysis/"
 
-library(rmweather) ### Random Forest/ Weather Normalization from Grange Github
-# Reference: https://github.com/skgrange/rmweather
+library(rmweather) ### Random Forest/ rmweather from Grange Github
 library (openair) ### For Theil-sen analysis
 
 ###01. Import the data set which contains: date, PM2.5 and MET weathers
@@ -67,8 +66,7 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
     predict_PM2.5_level<- rmw_predict( ### RUN Random Forest model with new MET dataset
       RF_PM2.5_model$model, 
       MET_2013_2017
-    )
-    
+      )    
     nomarlised_prediction <-cbind(nomarlised_prediction, predict_PM2.5_level$value_predict)}
     nomarlised_prediction
 }
