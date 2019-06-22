@@ -48,18 +48,26 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
   for (j in 1:n){
     for (i in 1:43824){           ### 43824 is number of hourly obserbvation from 2013-2017                    
       hour_1<-MET_2013_2017[i,5] ### "hour" variable is in the 5th column in the data set  
-      week_1<-MET_2013_2017[i,3] ### "week" variable is in the 3rd column in the data set 
-      ### Randomly sample weather data from 1988-2017
-      if(week_1==1){
-        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=52|week <= 3)  %>% sample_frac ()}
-      if(week_1==2){
-        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=53|week <= 4)  %>% sample_frac ()}
-      if(week_1==52) {
-        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=50|week <= 1)  %>% sample_frac ()}
-      if(week_1==53) {
-        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=51|week <= 2)  %>% sample_frac ()}
-      if(week_1>2 & week_1<51){
-        MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>= week_1-2 & week <= week_1+2) %>% sample_frac ()}  
+      day_1 <-MET_2013_2017[i,8] ### "day_julian" variable is in the 8th column in the dataset
+      # week_1<-MET_2013_2017[i,3] ### "week" variable is in the 3rd column in the data set 
+      ### Randomly sample weather data from 1988-2017 using + 2 weeks before & after
+      # if(week_1==1){
+      #  MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=52|week <= 3)  %>% sample_frac ()}
+      # if(week_1==2){
+      #   MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=53|week <= 4)  %>% sample_frac ()}
+      # if(week_1==52) {
+      #   MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=50|week <= 1)  %>% sample_frac ()}
+      # if(week_1==53) {
+      #   MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>=51|week <= 2)  %>% sample_frac ()}
+      # if(week_1>2 & week_1<51){
+      #  MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(week>= week_1-2 & week <= week_1+2) %>% sample_frac ()}  
+      if(day_1 <= 14){
+      MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(day_julian>= 365 + day_1-14 |day_julian <= day_1 +14)  %>% sample_frac ()}
+      if(day_1 > 14 & day_1<352){
+      MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(day_julian>=day_1-14 & day_julian <= day_1+14)  %>% sample_frac ()}
+      if(day_1 >=352) {
+      MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(day_julian>= day_1-14|day_julian <= day_1 +14-365)  %>% sample_frac ()}
+      
       ### Generate the new dataset of MET data from 2013-2017 by 1988-2017  
        r<-sample(1:nrow(MET_sampler), 1, replace=FALSE) ### Randomly select 1 row of MET
        MET_2013_2017[i,9:18]<-MET_sample[r,9:18]} # Generate the new data met for 2013-2017 by 1988-2017
