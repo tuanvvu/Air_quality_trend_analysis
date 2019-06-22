@@ -1,5 +1,6 @@
-### This code is based on the "normalweatherr" package from Grange et al. (2018):https://github.com/skgrange/normalweatherr
+### This study applied the "normalweatherr" package from Grange et al. (2018):https://github.com/skgrange/normalweatherr
 # Grange updated his "normalweatherr" package to "rmweather". His old packages "normalweaherr" is attached here.
+# The code based on "rmweatherr" package is updated, namely "air_quality_trend_using_rmweather.R"
 ### Any question, please contact Tuan, v.vu@bham.ac.uk
 setwd("F:/Air Quality Trends/ Data analysis/")
 workingDirectory<<-"F:/Air Quality Trends/ Data analysis/"
