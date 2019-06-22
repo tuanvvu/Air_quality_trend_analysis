@@ -40,8 +40,8 @@ MET_2013_2017<-import("PM2.5_MET_2013_2017.csv", date="date", date.format = "%d/
 nomarlised_prediction<- data_PM2.5 %>% select(1)
 
 # Use Parallel computing: 
-library(doParallel)
-registerDoParallel(cores = detectCores() - 1)
+# library(doParallel)
+# registerDoParallel(cores = detectCores() - 1)
 
 #Predict the level of a pollutant in different weather condition
 Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data set
