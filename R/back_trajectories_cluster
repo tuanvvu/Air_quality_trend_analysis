@@ -1,6 +1,5 @@
-#########
-######### The code is from Openair package for back trajectories of air masses
-###00. Install and call R-package
+######### The code is from Openair package (author: David Carslaw) for back trajectories of air masses:
+###00. Install and call R-packages
 library (openair)
 library(lubridate)
 library(latticeExtra)
