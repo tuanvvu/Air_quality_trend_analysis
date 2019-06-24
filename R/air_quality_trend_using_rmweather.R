@@ -76,7 +76,7 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
       RF_PM2.5_model$model, 
       df=rmw_prepare_dataMET_2013_2017, value = "PM2.5")
       )    
-    nomarlised_prediction <-cbind(nomarlised_prediction, predict_PM2.5_level$value_predict)}
+    nomarlised_prediction <-cbind(nomarlised_prediction, predict_PM2.5_level)}
     nomarlised_prediction
 }
 
