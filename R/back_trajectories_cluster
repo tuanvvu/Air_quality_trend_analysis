@@ -1,3 +1,5 @@
+#########
+######### The code is from Openair package for back trajectories of air masses
 ###00. Install and call R-package
 library (openair)
 library(lubridate)
@@ -13,12 +15,11 @@ workingDirectory<<-"E:/NOAA/"  ### Shortcut for the working directory
 
 ###01. GET MET DATA form BEIJING CAPITAL INTERNATIONAL AIRPORT
 info <- getMeta(lat = 52.00, lon = 0.5)  ### See the map Beijing 39.98, 116.4
-infor<-getMeta(site = "heathrow")
-
+# Or infor<-getMeta(site = "heathrow") 
 met_data <- importNOAA(code = "037720-99999", year = 2009:2013)
 write.csv(met_data,paste(workingDirectory,"MET_London_2009_2013.csv",sep=""))
 
-###02. TRAJ
+###02. TRAJ Analysis
 ###021. Function to get the the TRAJDATA record from NOAA
 getMet <- function (year = 2018, month = 1:12, path_met = "E:/NOAA/TrajData/") {
   for (i in seq_along(year)) {
@@ -29,9 +30,7 @@ getMet <- function (year = 2018, month = 1:12, path_met = "E:/NOAA/TrajData/") {
                                       sprintf("%02d", month[j]), ".gbl"), mode = "wb")}}}
 getMet(year = 2019, month = 1) ### GET data for sepecific time
 
-
 ###022.PRODUCE TRAJ
-
 # READ TRAJ from HYsplit model
 hy.path<-"c:/hysplit4/"         ### Install the Hysplit model into the computer
 read.files <- function(hours = 96, hy.path) {
@@ -61,7 +60,7 @@ read.files <- function(hours = 96, hy.path) {
   traj
 }
 
-# ADD MET 
+# ADD MET to the TRAJ
 add.met <- function(month, Year, met, bat.file) {
   ## if month is one, need previous year and month = 12
   if (month == 0) {
@@ -162,23 +161,20 @@ Paris_cluster<-cluster_winter$data
 Paris_cluster_2014_2018<-subset(Paris_cluster, hour.inc > -3)
 write.csv(Paris_cluster_2014_2018,paste(workingDirectory,"Paris_cluster_2014_2018.csv",sep=""))
 
-## 
 # traj3 <- merge(traj, met100, by = "date",all = TRUE) 
 # traj<-read.csv("traj.csv")
 # met100<-read.csv("MET100.csv"
-
-### ANALYSIS for APHH projects
+         
+###04. ANALYSIS for APHH projects
 traj2016 <- importTraj(site = "paris", year = 2014:2018, local = "E:/NOAA/TrajProc/")
 trajwinter <- selectByDate(traj2016,start="21/05/2017",end="25/06/2017")
 trajPlot(trajwinter,orientation=c(90,0,130))
 cluster_winter<-trajCluster(traj2016, n.cluster= 12)
 Beijing_cluster_winter<-cluster_winter$data
 write.csv(Beijing_cluster_winter,paste(workingDirectory,"Beijing_cluster_summer.csv",sep=""))
-
 trajCluste(subset(trajwinter, lat > 35 & lat < 55 & lon >110 & lon <130))
 
 traj <- importTraj(site = "london", year = 2009:2013)
-
 
 # trajsummer <- selectByDate(traj,start="22/05/2017",end="24/06/2017")
 # write.csv(traj,paste(workingDirectory,"traj2012.csv",sep=""))
@@ -202,6 +198,3 @@ traj <- importTraj(site = "london", year = 2009:2013)
 # Beijing_cluster<-cluster$data
 # Beijing_cluster_2014_2018<-subset(Beijing_cluster, hour.inc > -3)
 # write.csv(Beijing_cluster_2014_2018,paste(workingDirectory,"Beijing_cluster_2014_2018.csv",sep=""))
-
-
-
