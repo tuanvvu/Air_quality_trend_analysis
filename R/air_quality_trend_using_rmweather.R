@@ -69,7 +69,7 @@ Pollutant_prediction <-function (n){    ###n is the number of re-sample MET data
       MET_sample<-MET_1988_2017 %>% filter(hour==hour_1)  %>% filter(day_julian>= day_1-14|day_julian <= day_1 +14-365)  %>% sample_frac ()}
       
       ### Generate the new dataset of MET data from 2013-2017 by 1988-2017  
-       r<-sample(1:nrow(MET_sampler), 1, replace=FALSE) ### Randomly select 1 row of MET
+       r<-sample(1:nrow(MET_sample), 1, replace=FALSE) ### Randomly select 1 row of MET
        MET_2013_2017[i,9:18]<-MET_sample[r,9:18]} # Generate the new data met for 2013-2017 by 1988-2017
     
     predict_PM2.5_level<- rmw_predict( ### RUN Random Forest model with new MET dataset
