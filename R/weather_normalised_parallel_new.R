@@ -1,5 +1,4 @@
-## functions for re-sample weather & predict the concentration of a pollution using new re-samped weataher
-## using parallel on HPC for faster running
+### A new code for re-sample weather & predict the concentration of a pollution using new re-samped weataherusing parallel on HPC for faster running
 ## Author: Tuan Vu; v.vu@bham.ac.uk
 ###############################################################################
 
@@ -7,6 +6,12 @@ library (openair)
 library(plyr)
 library(dplyr)
 library(rmweather)
+
+# Use Parallel computing: 
+library(magrittr) # need to run every time you start R and want to use %>%
+library("doFuture") ### Parallel running
+  registerDoFuture()
+  plan(multiprocess) # Using all core of computer
 
 ###01. Data preparation
 setwd("C:/.../")
@@ -26,13 +31,11 @@ set.seet(12345)
 ###02.  Build RF model using rmweather packages
 RF_Coarse_AUT_model <- rmw_do_all(
   data_prepared_Coarse_AUT,
-  variables = c(
-    "date_unix", "day_julian", "weekday", "hour", "air_temp", "RH", "wd", "ws", "atmos_press"
-  ),
+  variables = c("date_unix", "day_julian", "weekday", "hour", "air_temp", "RH", "wd", "ws", "atmos_press"),
   n_trees = 300,
   n_samples = 300,
   verbose = TRUE
-)
+  )
 
 ###03. Predict the level of a pollutant in different weather condition
 
@@ -41,12 +44,6 @@ data_MET<-import("data_AP_AUT.csv", date="date", date.format = "%d/%m/%Y %H:%M")
 re_sample_MET<-import("data_AP_AUT.csv", date="date", date.format = "%d/%m/%Y %H:%M")
 pred<- data_Coarse_AUT %>% select(1)
 new_met<- data_MET %>%  slice(0)
-
-# Use Parallel computing: 
-library(magrittr) # need to run every time you start R and want to use %>%
-library("doFuture")
-  registerDoFuture()
-  plan(multiprocess)
       
 #Function to generated the new- weather from original weather
   new_met<-function (i) {
@@ -65,7 +62,7 @@ library("doFuture")
 set.seed(12345)
 prediction <- function (n) {
   for (i in 1:n) {
-    re_MET <- ldply(1:43824, new_met, .parallel = TRUE)
+    re_MET <- ldply(1:43824, new_met, .parallel = TRUE) # Using parallel
     re_sample_MET[,8:27]<-re_MET[,8:27] ### Replaced old MET by generated MET
     prediction_value<- rmw_predict( ### RUN Random Forest model with new MET dataset
       RF_Coarse_AUT_model$model, 
@@ -75,14 +72,3 @@ prediction <- function (n) {
 
 final_weather_normalised <- prediction (1000)
 write.csv(final_weather_normalised,paste(workingDirectory,"final_weather_normalised.csv",sep=""))
-
-
-
-
-
-
-
-
-
-
-
