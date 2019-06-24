@@ -1,15 +1,15 @@
-## functions to download the air quality data from the website
+## Functions to download the air quality data from the website
 ##
 ## Author: Tuan Vu; v.vu@bham.ac.uk
 ###############################################################################
 ## Sources of Air Quality Data sets in mega-cities:
-## EU:
+## EU:http://airindex.eea.europa.eu/ (using a Python package- Airbase)
 ## UK: https://uk-air.defra.gov.uk/data/data_selector_service#mid
-## China:
-## Germany:
-## London:
-## Paris:
-## Berlin:
+## China: http://beijingair.sinaapp.com/
+## Germany:https://www.umweltbundesamt.de/ or https://www.env-it.de/stationen/public/downloadRequest.do
+## London:https://www.londonair.org.uk/LondonAir/Default.aspx
+## Paris:https://www.airparif.asso.fr/en/indices/resultats-jour-citeair#jour
+## Berlin:https://luftdaten.berlin.de/lqi
 
 library(openair)
 library(lubridate)
@@ -21,7 +21,6 @@ library (RCurl)
 #link_download<-getURL(url, ..., .opts = list())  ### Get data from URL
 # Example for download Air quality data in Berlin from the website: https://luftdaten.berlin.de/
 # https://luftdaten.berlin.de/station/mc027?period=1h&timespan=custom&start%5Bdate%5D=27.06.2009&start%5Bhour%5D=00&end%5Bdate%5D=27.06.2009&end%5Bhour%5D=23#station-data
-
 
 ### Function to download the data
 download.data <- function(x) {
@@ -45,8 +44,6 @@ data.site <- ldply(39812:43463, download.data)
      names(data.site) <- c("date2", "NO","NO2","NOx","o3")
      # make a proper date/time, can paste together: data.site$date <- paste(o3$date,o3$time)
      data.site$date<-dmy_hm(data.site$date2, tz = "UTC")
-# Save the data set
+# Save the dataset
 write.csv(data.site(workingDirectory,"data.site.csv",sep=""))
      
-     
-
