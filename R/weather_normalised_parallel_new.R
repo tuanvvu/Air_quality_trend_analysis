@@ -1,5 +1,5 @@
 ### A new code for re-sample weather & predict the concentration of a pollution using new re-samped weataherusing parallel on HPC for faster running
-## Author: Tuan Vu; v.vu@bham.ac.uk
+## Author: Any comments, please feel free contact Tuan, v.vu@bham.ac.uk
 ###############################################################################
 
 library (openair)
