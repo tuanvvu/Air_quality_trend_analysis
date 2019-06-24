@@ -1,0 +1,207 @@
+###00. Install and call R-package
+library (openair)
+library(lubridate)
+library(latticeExtra)
+library(ggplot2)
+# require(devtools)
+# install_github('davidcarslaw/worldmet')
+library(worldmet)  ## download_met_data
+library(mapdata)
+
+setwd("E:/NOAA/")  ### Set the working directory
+workingDirectory<<-"E:/NOAA/"  ### Shortcut for the working directory
+
+###01. GET MET DATA form BEIJING CAPITAL INTERNATIONAL AIRPORT
+info <- getMeta(lat = 52.00, lon = 0.5)  ### See the map Beijing 39.98, 116.4
+infor<-getMeta(site = "heathrow")
+
+met_data <- importNOAA(code = "037720-99999", year = 2009:2013)
+write.csv(met_data,paste(workingDirectory,"MET_London_2009_2013.csv",sep=""))
+
+###02. TRAJ
+###021. Function to get the the TRAJDATA record from NOAA
+getMet <- function (year = 2018, month = 1:12, path_met = "E:/NOAA/TrajData/") {
+  for (i in seq_along(year)) {
+    for (j in seq_along(month)) {
+      download.file(url = paste0("ftp://arlftp.arlhq.noaa.gov/archives/reanalysis/RP",
+                                 year[i], sprintf("%02d", month[j]), ".gbl"),
+                    destfile = paste0(path_met, "RP", year[i],
+                                      sprintf("%02d", month[j]), ".gbl"), mode = "wb")}}}
+getMet(year = 2019, month = 1) ### GET data for sepecific time
+
+
+###022.PRODUCE TRAJ
+
+# READ TRAJ from HYsplit model
+hy.path<-"c:/hysplit4/"         ### Install the Hysplit model into the computer
+read.files <- function(hours = 96, hy.path) {
+  ## find tdump files
+  files <- Sys.glob("tdump*")
+  output <- file('Rcombined.txt', 'w')
+  ## read through them all, ignoring 1st 7 lines
+  for (i in files){
+    input <- readLines(i)
+    input <- input[-c(1:7)] # delete header
+    writeLines(input, output)
+  }
+  close(output)
+  ## read the combined txt file
+  traj <- read.table(paste0(hy.path, "working/Rcombined.txt"), header = FALSE)
+  traj <- subset(traj, select = -c(V2, V7, V8))
+  traj <- rename(traj, c(V1 = "receptor", V3 = "year", V4 = "month", V5 = "day",
+                         V6 = "hour", V9 = "hour.inc", V10 = "lat", V11 = "lon",
+                         V12 = "height", V13 = "pressure"))
+  ## hysplit uses 2-digit years ...
+  year <- traj$year[1]
+  if (year < 50) traj$year <- traj$year + 2000 else traj$year <- traj$year + 1900
+  traj$date2 <- with(traj, ISOdatetime(year, month, day, hour, min = 0, sec = 0,
+                                       tz = "GMT"))
+  ## arrival time
+  traj$date <- traj$date2 - 3600 * traj$hour.inc
+  traj
+}
+
+# ADD MET 
+add.met <- function(month, Year, met, bat.file) {
+  ## if month is one, need previous year and month = 12
+  if (month == 0) {
+    month <- 12
+    Year <- as.numeric(Year) - 1
+  }
+  if (month < 10) month <- paste("0", month, sep = "")
+  ## add first line
+  write.table(paste("echo", met, " >>CONTROL"),
+              bat.file, col.names = FALSE,
+              row.names = FALSE, quote = FALSE, append = TRUE)
+  x <- paste("echo RP", Year, month, ".gbl >>CONTROL", sep = "")
+  write.table(x, bat.file, col.names = FALSE,
+              row.names = FALSE, quote = FALSE, append = TRUE)
+}
+
+# PRODUCE THE TRAJ
+procTraj <- function(lat = 48.9, lon = 2.2, year = 2014, name = "paris",
+                     met = "E:/NOAA/TrajData/", out = "E:/NOAA/TrajProc/",
+                     hours = 96, height = 10, hy.path = "C:/hysplit4/") {
+  ## hours is the back trajectory time e.g. 96 = 4-day back trajectory
+  ## height is start height (m)
+  lapply(c("openair", "plyr", "reshape2"), require, character.only = TRUE)
+  ## function to run 12 months of trajectories
+  ## assumes 96 hour back trajectories, 1 receptor
+  setwd(paste0(hy.path, "working/"))
+  ## remove existing "tdump" files
+  path.files <- paste0(hy.path, "working/")
+  bat.file <- paste0(hy.path, "working/test.bat") ## name of BAT file to add to/run
+  files <- list.files(path = path.files, pattern = "tdump")
+  lapply(files, function(x) file.remove(x))
+  start <- paste(year, "-01-01", sep = "")
+  end <- paste(year, "-12-31 18:00", sep = "")
+  dates <- seq(as.POSIXct(start, "GMT"), as.POSIXct(end, "GMT"), by = "3 hour")
+  for (i in 1:length(dates)) {
+    year <- format(dates[i], "%y")
+    Year <- format(dates[i], "%Y") # long format
+    month <- format(dates[i], "%m")
+    day <- format(dates[i], "%d")
+    hour <- format(dates[i], "%H")
+    x <- paste("echo", year, month, day, hour, " >CONTROL")
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE)
+    x <- "echo 1 >>CONTROL"
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    x <- paste("echo", lat, lon, height, " >>CONTROL")
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    x <- paste("echo ", "-", hours, " >>CONTROL", sep = "")
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    x <- "echo 0 >>CONTROL
+    echo 10000.0 >>CONTROL
+    echo 3 >>CONTROL"
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    ## processing always assumes 3 months of met for consistent tdump files
+    months <- as.numeric(unique(format(dates[i], "%m")))
+    months <- c(months, months + 1:2)
+    months <- months - 1 ## to make sure we get the start of the previous year
+    months <- months[months <= 12]
+    if (length(months) == 2) months <- c(min(months) - 1, months)
+    for (i in 1:3)
+      add.met(months[i], year, met, bat.file)
+    x <- "echo ./ >>CONTROL"
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    x <- paste("echo tdump", year, month, day, hour, " >>CONTROL", sep = "")
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    x <- "C:\\hysplit4\\exec\\hyts_std"
+    write.table(x, bat.file, col.names = FALSE,
+                row.names = FALSE, quote = FALSE, append = TRUE)
+    ## run the file
+    system(paste0(hy.path, 'working/test.bat'))
+  }
+  ## combine files and make data frame
+  traj <- read.files(hours, hy.path)
+  ## write R object to file
+  file.name <- paste(out, name, Year, ".RData", sep = "")
+  save(traj, file = file.name)
+}
+
+for (i in 2014:2018) {                           ### Change the date in 
+  procTraj(lat = 48.9, lon = 2.2, year = i, 
+           name = "paris", hours = 96,
+           met = "E:/NOAA/TrajData/", out = "E:/NOAA/TrajProc/",
+           hy.path = "C:/hysplit4/") }
+
+###03. DATA ANALYSIS for TRAJ
+# import the TRAJ data
+traj_glasgow_2014_2018 <- importTraj(site = "glasgow", year = 2014:2018, local = "E:/NOAA/TrajProc/")
+# Cluster analysis of the TRAJ
+cluster <- trajCluster(subset(traj2014_2018,lat > 20 & lat < 60 & lon >50 & lon< 180), method = "Angle", n.cluster= 11, col = "Set2",orientation=c(90,0,130))
+cluster <- trajCluster(traj_glasgow_2014_2018, n.cluster= 12)
+Paris_cluster<-cluster_winter$data
+Paris_cluster_2014_2018<-subset(Paris_cluster, hour.inc > -3)
+write.csv(Paris_cluster_2014_2018,paste(workingDirectory,"Paris_cluster_2014_2018.csv",sep=""))
+
+## 
+# traj3 <- merge(traj, met100, by = "date",all = TRUE) 
+# traj<-read.csv("traj.csv")
+# met100<-read.csv("MET100.csv"
+
+### ANALYSIS for APHH projects
+traj2016 <- importTraj(site = "paris", year = 2014:2018, local = "E:/NOAA/TrajProc/")
+trajwinter <- selectByDate(traj2016,start="21/05/2017",end="25/06/2017")
+trajPlot(trajwinter,orientation=c(90,0,130))
+cluster_winter<-trajCluster(traj2016, n.cluster= 12)
+Beijing_cluster_winter<-cluster_winter$data
+write.csv(Beijing_cluster_winter,paste(workingDirectory,"Beijing_cluster_summer.csv",sep=""))
+
+trajCluste(subset(trajwinter, lat > 35 & lat < 55 & lon >110 & lon <130))
+
+traj <- importTraj(site = "london", year = 2009:2013)
+
+
+# trajsummer <- selectByDate(traj,start="22/05/2017",end="24/06/2017")
+# write.csv(traj,paste(workingDirectory,"traj2012.csv",sep=""))
+# traj3 <- merge(traj, met100, by = "date",all = TRUE) 
+# traj<-read.csv("traj.csv")
+# met100<-read.csv("MET100.csv")
+# met100$date<-as.POSIXct(strptime(met100$date, format = "%m/%d/%Y %H:%M", tz = "GMT"))
+# traj$date<-as.POSIXct(strptime(traj$date, format =  "%d/%m/%Y %H:%M", tz = "GMT"))
+# trajPlot(selectByDate(traj3, start = "22/05/2016", end = "10/12/2016"),pollutant = "PM2.5", col = "jet", lwd =2)
+# traj4<-selectByDate(traj3, start = "10/11/2016", end = "10/12/2016")
+# trajLevel(subset(traj4, lat > 10 & lat < 180 & lon >80 & lon <250), pollutant = "PM2.5",col = "jet")
+# trajLevel(subset(traj4, lat > 10 & lat < 180 & lon >80 & lon <250),pollutant ="PM2.5",statistic = "cwt",smooth = TRUE,col = "increment")
+# trajPlot(selectByDate(trajwinter, lat > 35 & lat < 55 & lon >110 & lon <130, start = "15/11/2016", end ="21/11/2016"))
+# data_Met<- import("data_PM2.5_MET.csv", date="date", date.format = "%d/%m/%Y %H:%M")
+# remet<-data_Met %>% filter(month==1) %>% group_by(hour) %>% sample_n(10)
+# for (i in 1:30) { k<-i*24
+# a<- data_Met %>% filter(month==1) %>% group_by(ID) %>% sample_n(1)
+# remet[k:k+24,]<-a[1:24,]}
+# remet<-rbind.fill(remet,b)
+# write.csv(remet,paste(workingDirectory,"remet_05.csv",sep=""))
+# Beijing_cluster<-cluster$data
+# Beijing_cluster_2014_2018<-subset(Beijing_cluster, hour.inc > -3)
+# write.csv(Beijing_cluster_2014_2018,paste(workingDirectory,"Beijing_cluster_2014_2018.csv",sep=""))
+
+
+
