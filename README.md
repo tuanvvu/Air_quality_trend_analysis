@@ -1,4 +1,5 @@
 ## Air Quality Trend Analysis: 
+author: Vu, T.V & Shi, Z
 
 01. Automatically dowload dataset from Air Quality Monitoring stations
 
