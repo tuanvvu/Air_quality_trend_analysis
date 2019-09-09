@@ -10,7 +10,7 @@ The codes for downloading & analyzing the data from air quality monitring statio
 03. Back-trajectories using HYPLITS (applied the codes from Openai's package)
 
 04. Identification of the role of anthropogenic emissions and meteorology on Air Quality Trends using random forest algorithms
-(applied the coded from rmweather package)
+(applied the codes from rmweather package)
 
 References:
 Vu, T. V., Shi, Z., Cheng, J., Zhang, Q., He, K., Wang, S., Harrison, R. M., 2019. Assessing the impact of Clean Air Action Plan on Air Quality Trends in Beijing Megacity using a machine learning technique. Atmospheric Chemistry and Physics, 9(17):11303-11314
