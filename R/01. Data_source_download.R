@@ -10,6 +10,8 @@
 ## London:https://www.londonair.org.uk/LondonAir/Default.aspx
 ## Paris:https://www.airparif.asso.fr/en/indices/resultats-jour-citeair#jour
 ## Berlin:https://luftdaten.berlin.de/lqi
+## Hong Kong: aqhi.gov.hk 
+## Istabul: http://laboratuvar.cevre.gov.tr/Default.ltr.aspx
 
 library(openair)
 library(lubridate)
