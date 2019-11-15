@@ -1,5 +1,6 @@
-### A new code for re-sample weather & predict the concentration of a pollution using new re-samped weataherusing parallel on HPC for faster running
-## Author: Any comments, please feel free contact Tuan, v.vu@bham.ac.uk
+### A new code for re-sample weather & predict the concentration of a pollution 
+# using new re-samped weather using parallel on HPC for faster running based on R- "rmweatherr" package from Grange et al (2019).
+### Any comments, please feel free contact Tuan, v.vu@bham.ac.uk
 ###############################################################################
 
 library (openair)
@@ -62,7 +63,7 @@ new_met<- data_MET %>%  slice(0)
 set.seed(12345)
 prediction <- function (n) {
   for (i in 1:n) {
-    re_MET <- ldply(1:43824, new_met, .parallel = TRUE) # Using parallel
+    re_MET <- ldply(1:length(data_MET), new_met, .parallel = TRUE) # Using parallel
     re_sample_MET[,8:27]<-re_MET[,8:27] ### Replaced old MET by generated MET
     prediction_value<- rmw_predict( ### RUN Random Forest model with new MET dataset
       RF_Coarse_AUT_model$model, 
@@ -70,5 +71,5 @@ prediction <- function (n) {
     pred<-cbind(pred,prediction_value)}
     pred}
 
-final_weather_normalised <- prediction (1000)
-write.csv(final_weather_normalised,paste(workingDirectory,"final_weather_normalised.csv",sep=""))
+final_weather_normalised <- prediction (1000)  ## Randomly ran for 1000 predictions
+write.csv(final_weather_normalised,paste(workingDirectory,"final_weather_normalised.csv",sep="")) ### Save 1000 predictions
