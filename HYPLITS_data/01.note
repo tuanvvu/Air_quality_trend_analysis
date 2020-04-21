@@ -1,1 +1,3 @@
-The data was run from HYPLISTS, 96 hours and received height at 20m
+The data was run from HYPLISTS model: 96 hours and received height at 20m
+The code is from following link:
+https://github.com/tuanvvu/Air_Quality_Trend_Analysis/blob/master/R/04.%20back_trajectories_cluster
