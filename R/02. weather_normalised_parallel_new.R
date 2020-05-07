@@ -63,7 +63,7 @@ new_met<- data_MET %>%  slice(0)
 set.seed(12345)
 prediction <- function (n) {
   for (i in 1:n) {
-    re_MET <- ldply(1:length(data_MET), new_met, .parallel = TRUE) # Using parallel
+    re_MET <- ldply(1:nrow(data_MET), new_met, .parallel = TRUE) # Using parallel
     re_sample_MET[,8:27]<-re_MET[,8:27] ### Replaced old MET by generated MET
     prediction_value<- rmw_predict( ### RUN Random Forest model with new MET dataset
       RF_Coarse_AUT_model$model, 
